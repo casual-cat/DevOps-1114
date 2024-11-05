@@ -1,0 +1,62 @@
+---
+- name: Deploy Gabi's Amazing Website with Banana Cat GIF
+  hosts: my_vms
+  become: yes
+
+  vars:
+    website_title: "Welcome to Gabi's Amazing Website!"
+
+  tasks:
+    - name: Install Apache Web Server
+      apt:
+        name: apache2
+        state: present
+        update_cache: yes
+
+    - name: Create Gabi's Amazing Website index.html with Banana Cat GIF
+      copy:
+        dest: /var/www/html/index.html
+        content: |
+          <!DOCTYPE html>
+          <html lang="en">
+          <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>{{ website_title }}</title>
+            <style>
+              body {
+                font-family: Arial, sans-serif;
+                text-align: center;
+                background-color: #ffd1dc; /* Pastel pink background */
+                color: #333;
+                margin: 0;
+                padding: 0;
+              }
+              h1 {
+                color: #ff69b4; /* Hot pink */
+                margin-top: 20px;
+              }
+              p {
+                font-size: 1.2em;
+              }
+              .banana-cat {
+                margin-top: 20px;
+              }
+            </style>
+          </head>
+          <body>
+            <h1>{{ website_title }}</h1>
+            <p>RUNNING BANANA CAT!! THIS IS 4 LIRON & DAN!! (and avicii)</p>
+            
+            <div class="banana-cat">
+              <img src="banana-cat.gif" alt="Banana Cat GIF" width="300">
+            </div>
+          </body>
+          </html>
+        mode: '0644'
+
+    - name: Ensure Apache Service is Running
+      service:
+        name: apache2
+        state: started
+        enabled: yes
