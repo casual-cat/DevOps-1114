@@ -57,6 +57,55 @@
 # print("last: ", pets[-1])
 # print("all: ", len(pets))
 
+#  exercise 14
+# -------------------
+# numbers = [5, 10, 15, 20, 25]
+# print("numbers: ", numbers)
+# numbers[1]= 12
+# print("new nums: ", numbers)
+# numbers.append(30)
+# print("new new: ", numbers)
+# numbers.pop(0)
+# print("new one: ", numbers)
+
+#  exercise 15
+# -------------------
+# numbers = list(range(1, 11))
+# print(numbers)
+# print(numbers [:5])
+# print(numbers [-3:])
+# print(numbers [::-1])
+
+#  exercise 19
+# -------------------
+# list1= [1, 2, 3]
+# list2= [4, 5, 6]
+# combined = list1 + list2 
+# print(combined)
+
+#  exercise 17
+# -------------------
+# fruit = ["apple", "banana", "apple", "mango"]
+# count = fruit.count("apple")
+# print(count)
+
+#  exercise 20
+# -------------------
+# def remove_all(lst, value):
+#     # Use a while loop to remove all occurrences of the value
+#     while value in lst:
+#         lst.remove(value)
+#     return lst
+
+# # Example usage
+# numbers = [1, 2, 2, 3, 4, 2]
+# result = remove_all(numbers, 2)
+# print("Result:", result)
+
+#  exercise 21
+# -------------------
+numbers = list(range(1, 11))
+
 
 
 
