@@ -104,12 +104,13 @@ def count_words(text):
 # else:
 #     print(False)
 
-set_b= {3, 4, 5, 6}
+# set_b= {3, 4, 5, 6}
 # if 2 in set_b:
 #     print(True)
 # else:
 #     print(False)
-set_b.add(7)
-print(set_b)
-set_b.remove(7)
-print(set_b)
+# set_b.add(7)
+# print(set_b)
+# set_b.remove(7)
+# print(set_b)
+
