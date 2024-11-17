@@ -7,7 +7,6 @@ import os
 # Function to measure download and upload speeds
 def measure_speed():
     st = speedtest.Speedtest()
-    
     print("Measuring download speed...")
     download = st.download() / 1_000_000  # Convert to Mbps
     print(f"Download speed: {download:.2f} Mbps")
@@ -41,5 +40,5 @@ def file_record():
 while True:
     file_record()
     print("Sleeping for 5 minutes...")
-    time.sleep(300)  # Sleep for 300 seconds (5 minutes)
+    time.sleep(5)  # Sleep for 300 seconds (5 minutes)
 
