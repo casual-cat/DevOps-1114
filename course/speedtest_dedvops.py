@@ -36,9 +36,7 @@ def file_record():
     
     print("Results recorded in 'internet_speed.csv'.")
 
-# Main loop to record speed every 5 minutes
 while True:
     file_record()
-    print("Sleeping for 5 minutes...")
-    time.sleep(5)  # Sleep for 300 seconds (5 minutes)
-
+    # print("Sleeping for 5 minutes...")
+    time.sleep(5) 
