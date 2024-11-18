@@ -41,5 +41,5 @@ def file_record():
 while True:
     file_record()
     print("Sleeping for 5 minutes...")
-    time.sleep(300)  # Sleep for 300 seconds (5 minutes)
+    time.sleep(5)  # Sleep for 300 seconds (5 minutes)
 
