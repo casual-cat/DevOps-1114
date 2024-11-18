@@ -33,10 +33,11 @@ def counting_entries_and_lines():
     with open("journal.txt", "r") as file:
         lines= file.readlines()
         total_entries= len(lines)
-        print("you have {total_entries} entries in your journal")
+        print(f"you have {total_entries} entries in your journal")
         total_words= sum(len(line.split()) for line in lines)
-        print("you have {total_words} words in your journal")
+        print(f"you have {total_words} words in your journal")
 #add entries:
+import datetime
 def add_entry():
     with open("journal.txt", "a") as file:
         import datetime
@@ -45,7 +46,7 @@ def add_entry():
             if entry.lower() == 'exit':
                 break
             current_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-            file.write("[{current_time}] [{entry}]\n") 
+            file.write(f"[{current_time}] [{entry}]\n") 
             print("new entry log added into journal.txt file!")
 #add entries after yes or no:
 # def add_entry_after_yes_or_no():
@@ -68,8 +69,9 @@ while True:
         break
     
     elif more_entries.lower() == 'no':
-        print("see you next time! \nlast time modified: ", datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+        print(f"see you next time! \nlast time modified: ", datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
         break
     else:
         print("please write yes/no.")
+
 

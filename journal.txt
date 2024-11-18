@@ -1,4 +1,0 @@
-[{current_time}] [{entry}]
-[{current_time}] [{entry}]
-[{current_time}] [{entry}]
-[{current_time}] [{entry}]
