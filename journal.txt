@@ -1,6 +1,0 @@
-[{current_time}] [{entry}]
-[{current_time}] [{entry}]
-[{current_time}] [{entry}]
-[{current_time}] [{entry}]
-[2024-11-13 23:28:36] [uhm ]
-[2024-11-14 17:37:33] [kys]
