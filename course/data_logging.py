@@ -31,11 +31,12 @@
 #count words and lines:
 def counting_entries_and_lines():
     with open("journal.txt", "r") as file:
-        lines= file.readlines()
-        total_entries= len(lines)
-        print("you have {total_entries} entries in your journal")
-        total_words= sum(len(line.split()) for line in lines)
-        print("you have {total_words} words in your journal")
+        lines = file.readlines()
+    total_entries = len(lines)
+    print(f"You have {total_entries} entries in your journal.")
+    total_words = sum(len(line.split()) for line in lines)
+    print(f"You have {total_words} words in your journal.") 
+
 #add entries:
 def add_entry():
     with open("journal.txt", "a") as file:
@@ -45,7 +46,7 @@ def add_entry():
             if entry.lower() == 'exit':
                 break
             current_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-            file.write("[{current_time}] [{entry}]\n") 
+            file.write(f"[{current_time}] [{entry}]\n") 
             print("new entry log added into journal.txt file!")
 #add entries after yes or no:
 # def add_entry_after_yes_or_no():
