@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Barakoni Interactive Game</title>
+    <style>
+        body {
+            background-color: #2c2f33;
+            font-family: 'Arial', sans-serif;
+            text-align: center;
+            color: white;
+            margin: 0;
+            padding: 0;
+        }
+
+        .game-container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .character {
+            max-width: 200px;
+            margin-bottom: 20px;
+            border-radius: 15px;
+            animation-duration: 1s;
+        }
+
+        .dialogue-box {
+            background-color: rgba(44, 47, 51, 0.85);
+            border: 2px solid #7289da;
+            border-radius: 15px;
+            padding: 20px;
+            width: 60%;
+            margin-bottom: 20px;
+        }
+
+        .dialogue-text {
+            margin: 0;
+            font-size: 1.2rem;
+        }
+
+        .choice-button {
+            background-color: #5865f2;
+            color: white;
+            padding: 10px 20px;
+            margin: 10px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .choice-button:hover {
+            background-color: #4752c4;
+        }
+
+        .back-button {
+            background-color: #f04747;
+            color: white;
+            padding: 10px 20px;
+            margin-top: 20px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .back-button:hover {
+            background-color: #c0392b;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <!-- Character Image -->
+        <img id="character-image" class="character" src="/static/images/barakoni_default.png" alt="Barakoni">
+        
+        <!-- Dialogue Box -->
+        <div class="dialogue-box">
+            <p id="dialogue-text" class="dialogue-text">Loading...</p>
+        </div>
+
+        <!-- Choices -->
+        <div id="choices-container"></div>
+
+        <!-- Back to Menu -->
+        <button class="back-button" onclick="navigateTo('/')">Back to Menu</button>
+    </div>
+
+    <script>
+        // Initial dialogue load
+        window.onload = () => {
+            sendOption("start");
+        };
+
+        // Send option to server
+        function sendOption(option) {
+            fetch('/respond', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ option: option })
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Update dialogue text
+                document.getElementById('dialogue-text').textContent = data.text;
+
+                // Update choices
+                const choicesContainer = document.getElementById('choices-container');
+                choicesContainer.innerHTML = ""; // Clear old choices
+                data.choices.forEach(choice => {
+                    const button = document.createElement('button');
+                    button.textContent = choice;
+                    button.className = "choice-button";
+                    button.onclick = () => sendOption(choice);
+                    choicesContainer.appendChild(button);
+                });
+
+                // Update character image
+                const characterImage = document.getElementById('character-image');
+                characterImage.src = data.image;
+
+                // Reset animations while keeping the default class
+                characterImage.className = "character";
+
+                // Add animation class if mood exists
+                if (data.mood) {
+                    characterImage.classList.add(data.mood);
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        }
+
+        // Navigation to menu
+        function navigateTo(url) {
+            window.location.href = url;
+        }
+    </script>
+</body>
+</html>
