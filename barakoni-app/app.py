@@ -8,6 +8,10 @@ app.secret_key = "supersecretkey"
 def menu():
     return render_template('menu.html')
 
+@app.route('/loading')
+def loading():
+    return render_template('loading.html')
+
 @app.route('/game')
 def game():
     return render_template('index.html')

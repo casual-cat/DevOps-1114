@@ -6,7 +6,7 @@
     <title>Loading...</title>
     <style>
         body {
-            background-color: #2c2f33;
+            background: linear-gradient(135deg, #2c2f33, #23272a);
             font-family: 'Arial', sans-serif;
             color: white;
             display: flex;
@@ -14,38 +14,116 @@
             align-items: center;
             height: 100vh;
             margin: 0;
+            overflow: hidden;
+        }
+
+        .loading-container {
+            text-align: center;
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .loading-gif {
+            max-width: 150px;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .loading-title {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #7289da;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+        }
+
+        .loading-bar-container {
+            width: 80%;
+            max-width: 500px;
+            height: 12px;
+            background: #5865f2;
+            border-radius: 6px;
+            margin: 20px auto;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .loading-bar {
+            width: 0%;
+            height: 100%;
+            background: linear-gradient(to right, #7289da, #99aab5);
+            border-radius: 6px;
+            transition: width 0.5s ease;
         }
 
         .loading-text {
-            font-size: 1.5rem;
-            text-align: center;
+            font-size: 1rem;
+            margin-top: 10px;
+            color: #99aab5;
+        }
+
+        .loading-hint {
+            font-size: 0.9rem;
+            font-style: italic;
+            color: #99aab5;
+            margin-top: 10px;
         }
     </style>
 </head>
 <body>
-    <div class="loading-text" id="loading-text">Loading Barakoni's patience...</div>
+    <div class="loading-container">
+        <!-- Animated GIF -->
+        <img class="loading-gif" src="{{ url_for('static', filename='images/loading_placeholder.gif') }}" alt="Barakoni Running">
+        
+        <!-- Loading Title -->
+        <div class="loading-title">Loading...</div>
+
+        <!-- Progress Bar -->
+        <div class="loading-bar-container">
+            <div id="loading-bar" class="loading-bar"></div>
+        </div>
+
+        <!-- Loading Message -->
+        <div id="loading-text" class="loading-text">Initializing sarcasm module...</div>
+
+        <!-- Funny Hint -->
+        <div class="loading-hint">"Good things take time... or do they?"</div>
+    </div>
 
     <script>
         const messages = [
             "Compiling sarcasm...",
-            "Loading memes into memory...",
-            "Running a debugger on humans...",
-            "Barakoni is contemplating life...",
-            "Wait, you’re still here?"
+            "Loading witty comments...",
+            "Optimizing snarkiness...",
+            "Debugging humans...",
+            "Almost there... or are we?"
         ];
 
-        let index = 0;
-        setInterval(() => {
-            const loadingText = document.getElementById('loading-text');
-            loadingText.textContent = messages[index];
-            index = (index + 1) % messages.length;
-        }, 2000);
+        let progress = 0;
+        let messageIndex = 0;
 
-        // Redirect to the intended page after 5 seconds
-        setTimeout(() => {
-            window.location.href = sessionStorage.getItem('nextPage') || '/';
-        }, 5000);
-        
+        function updateProgress() {
+            if (progress < 100) {
+                progress += Math.random() * 20; // Increment progress randomly
+                if (progress > 100) progress = 100;
+
+                document.getElementById('loading-bar').style.width = progress + '%';
+                document.getElementById('loading-text').textContent = messages[messageIndex];
+                messageIndex = (messageIndex + 1) % messages.length;
+
+                setTimeout(updateProgress, 800);
+            } else {
+                window.location.href = '/game';
+            }
+        }
+
+        // Start the loading sequence
+        updateProgress();
     </script>
 </body>
 </html>
