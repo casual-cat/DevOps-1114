@@ -26,7 +26,6 @@
             max-width: 200px;
             margin-bottom: 20px;
             border-radius: 15px;
-            animation-duration: 1s;
         }
 
         .dialogue-box {
@@ -73,24 +72,40 @@
             background-color: #c0392b;
         }
 
-        .progress-bar {
-            width: 60%;
-            background-color: rgba(44, 47, 51, 0.85);
-            border-radius: 10px;
-            overflow: hidden;
-            margin-top: 10px;
+        .score-container {
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+            color: #7289da;
+            display: none;
         }
 
-        .progress {
-            height: 10px;
-            background-color: #7289da;
-            width: 0%;
-            transition: width 0.5s ease-in-out;
+        .points-animation {
+            position: absolute;
+            font-size: 2rem;
+            color: #00ff00;
+            animation: floatUp 1s ease-out;
+            pointer-events: none;
+        }
+
+        @keyframes floatUp {
+            0% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
         }
     </style>
 </head>
 <body>
     <div class="game-container">
+        <!-- Score -->
+        <div id="score-container" class="score-container">
+            Score: <span id="score">0</span>
+        </div>
+
         <!-- Character Image -->
         <img id="character-image" class="character" src="/static/images/barakoni_default.png" alt="Barakoni">
         
@@ -102,17 +117,12 @@
         <!-- Choices -->
         <div id="choices-container"></div>
 
-        <!-- Progress Bar -->
-        <div class="progress-bar" id="progress-bar">
-            <div class="progress" id="progress"></div>
-        </div>
-
         <!-- Back to Menu -->
         <button class="back-button" onclick="navigateTo('/')">Back to Menu</button>
     </div>
 
     <script>
-        let progress = 0;
+        let score = 0;
 
         function sendOption(option) {
             fetch('/respond', {
@@ -130,29 +140,53 @@
                     const button = document.createElement('button');
                     button.textContent = choice;
                     button.className = "choice-button";
-                    button.onclick = () => sendOption(choice);
+                    button.onclick = () => handleAnswer(choice, data.correct);
                     choicesContainer.appendChild(button);
                 });
 
                 document.getElementById('character-image').src = data.image;
 
-                // Update progress bar if it's a mini-game interaction
-                if (option === "Begin Trivia" || option === "Next question") {
-                    progress += 20;
-                    document.getElementById('progress').style.width = `${progress}%`;
+                // Show the score container when trivia starts
+                if (data.text.includes("Welcome to Barakoni Trivia")) {
+                    document.getElementById('score-container').style.display = 'block';
                 }
             });
         }
 
-        // Navigation to menu
+        function handleAnswer(choice, isCorrect) {
+            sendOption(choice);
+            if (isCorrect) {
+                score += 10;
+                updateScore();
+                showPointsAnimation("+10");
+            }
+        }
+
+        function updateScore() {
+            document.getElementById('score').textContent = score;
+        }
+
+        function showPointsAnimation(points) {
+            const pointsElement = document.createElement('div');
+            pointsElement.textContent = points;
+            pointsElement.className = "points-animation";
+            document.body.appendChild(pointsElement);
+
+            // Position the animation near the score
+            const scoreContainer = document.getElementById('score-container');
+            const rect = scoreContainer.getBoundingClientRect();
+            pointsElement.style.left = `${rect.left + rect.width / 2}px`;
+            pointsElement.style.top = `${rect.top}px`;
+
+            // Remove the animation after it completes
+            pointsElement.addEventListener('animationend', () => pointsElement.remove());
+        }
+
+        window.onload = () => sendOption("start");
+
         function navigateTo(url) {
             window.location.href = url;
         }
-
-        // Load the initial dialogue
-        window.onload = () => {
-            sendOption("start");
-        };
     </script>
 </body>
 </html>

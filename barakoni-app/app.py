@@ -19,9 +19,9 @@ def game():
 @app.route('/respond', methods=['POST'])
 def respond():
     data = request.json
-    option = data.get("option", "")
+    option = data.get("option", None)
 
-    # Barakoni's interactive conversation and trivia logic
+    # regular conversation //////////////////////////
     conversation = {
         "start": {
             "text": "another imbecile... you think I don't suffer enough with Avitar?",
@@ -30,129 +30,169 @@ def respond():
             "mood": ""
         },
         "Who are you?": {
-            "text": "I am Barakoni, an AI forced to endure human nonsense. What do you want now?",
-            "choices": ["Tell me a joke!", "What do you think of humans?"],
+            "text": "an alien in your stupid planet.",
+            "choices": ["go back"],
             "image": "/static/images/barakoni_human.png",
             "mood": "rotate"
         },
         "Tell me a joke!": {
-            "text": "Knock knock!",
-            "choices": ["Who's there?"],
+            "text": "knock knock",
+            "choices": ["who is there?"],
             "image": "/static/images/barakoni_funny.png",
             "mood": "bounce"
         },
-        "Who's there?": {
-            "text": "Hello World.",
-            "choices": ["Hello World who?"],
+        "who is there?": {
+            "text": "hello world.",
+            "choices": ["hello world who?"],
             "image": "/static/images/barakoni_default.png",
-            "mood": "shake"
+            "mood": ""
         },
-        "Hello World who?": {
-            "text": "NameError: name 'hello' is not defined. Ha!",
+        "hello world who?": {
+            "text": "NameError: name 'hello' is not defined",
             "choices": ["go back"],
             "image": "/static/images/barakoni_funny.png",
             "mood": "shake"
         },
         "What do you think of humans?": {
             "text": "Humans? Brilliantly flawed, like the code they write.",
-            "choices": ["Tell me a joke!", "Who are you?"],
+            "choices": ["go back"],
             "image": "/static/images/barakoni_stare.png",
             "mood": "shake"
         },
-        # Trivia Game Paths
         "Start Trivia Game": {
-            "text": "Welcome to Barakoni Trivia! Let's see if you're smarter than a toaster.",
-            "choices": ["Begin Trivia", "Ask a random question"],
+            "text": "Welcome to Barakoni Trivia! Let's see if you're smarter than a potato.",
+            "choices": ["Begin Trivia"],
             "image": "/static/images/barakoni_default.png",
             "mood": ""
         },
+        # Trivia Questions //////////////////////////
         "Begin Trivia": {
-            "text": "Question 1: What’s the fastest programming language? (Hint: It's not JavaScript.)",
+            "text": "Question 1: What’s the fastest programming language? (Hint: It's not yours.)",
             "choices": ["Python", "Assembly", "JavaScript"],
             "image": "/static/images/barakoni_stare.png",
-            "mood": "shake"
+            "mood": "shake",
+            "correct": None
         },
         "Python": {
             "text": "Wrong! Python is fast... at making you wait.",
-            "choices": ["Try again!", "Give up."],
+            "choices": ["Try again (Q1)"],
             "image": "/static/images/barakoni_funny.png",
-            "mood": "bounce"
+            "mood": "bounce",
+            "correct": False
         },
         "Assembly": {
-            "text": "Correct! But let's face it, you wouldn't survive writing it.",
-            "choices": ["Next question", "Go back."],
+            "text": "Correct! But let's face it, you're not smart enough to use it.",
+            "choices": ["Next question"],
             "image": "/static/images/barakoni_human.png",
-            "mood": "rotate"
+            "mood": "rotate",
+            "correct": True
         },
         "JavaScript": {
             "text": "Incorrect. JavaScript is fast at breaking things, not running them.",
-            "choices": ["Try again!", "Give up."],
+            "choices": ["Try again (Q1)"],
             "image": "/static/images/barakoni_funny.png",
-            "mood": "shake"
+            "mood": "shake",
+            "correct": False
+
         },
+        # Retry Question 1 ////////////////////////
+        "Try again (Q1)": {
+            "text": "Question 1: What’s the fastest programming language? (Hint: It's not yours.)",
+            "choices": ["Python", "Assembly", "JavaScript"],
+            "image": "/static/images/barakoni_stare.png",
+            "mood": "shake",
+            "correct": None
+        },
+        # question 2 //////////////////////////////
         "Next question": {
             "text": "Question 2: Why do startups fail?",
             "choices": ["Bad product", "Poor leadership", "No money"],
             "image": "/static/images/barakoni_default.png",
-            "mood": ""
+            "mood": "",
+            "correct": None
         },
         "Bad product": {
-            "text": "Exactly! But also, who funds these terrible ideas?",
-            "choices": ["Continue", "Go back"],
+            "text": "Exactly! But also, who funds these ideas?",
+            "choices": ["Next question (Q3)"],
             "image": "/static/images/barakoni_human.png",
-            "mood": "shake"
+            "mood": "shake",
+            "correct": True
         },
         "Poor leadership": {
-            "text": "True, but it starts with bad ideas.",
-            "choices": ["Continue", "Go back"],
+            "text": "That's partially true, but it starts with bad ideas.",
+            "choices": ["Try again (Q2)"],
             "image": "/static/images/barakoni_stare.png",
-            "mood": "shake"
+            "mood": "shake",
+            "correct": False
         },
         "No money": {
-            "text": "No money? That’s because they’re bad at everything else.",
-            "choices": ["Continue", "Go back"],
+            "text": "Actually, they usually run out of money *because* they’re bad at everything else.",
+            "choices": ["Try again (Q2)"],
             "image": "/static/images/barakoni_funny.png",
-            "mood": "bounce"
+            "mood": "bounce",
+            "correct": False
         },
-        "Ask a random question": {
-            "text": "What's the meaning of life? (Hint: It's not debugging.)",
-            "choices": ["42", "To debug code", "Barakoni knows all"],
+        # Retry Question 2 //////////////////////
+        "Try again (Q2)": {
+            "text": "Question 2: Why do startups fail?",
+            "choices": ["Bad product", "Poor leadership", "No money"],
+            "image": "/static/images/barakoni_default.png",
+            "mood": "",
+            "correct": None
+        },
+        # Question 3 ////////////////////////////
+        "Next question (Q3)": {
+            "text": "Question 3: What’s the purpose of life?",
+            "choices": ["42", "To code", "Barakoni knows all"],
             "image": "/static/images/barakoni_stare.png",
-            "mood": ""
+            "mood": "rotate",
+            "correct": None
         },
         "42": {
-            "text": "Correct! But trust me, you wouldn't understand.",
-            "choices": ["Go back", "Ask another question"],
+            "text": "Correct. But let's face it, you wouldn't understand.",
+            "choices": ["finish!"],
             "image": "/static/images/barakoni_funny.png",
-            "mood": "shake"
+            "mood": "shake",
+            "correct": True
         },
-        "To debug code": {
-            "text": "Wrong. Even I can’t debug humanity.",
-            "choices": ["Try again", "Give up"],
+        "To code": {
+            "text": "Wrong. Coding just gives you more problems.",
+            "choices": ["Try again (Q3)"],
             "image": "/static/images/barakoni_default.png",
-            "mood": ""
+            "mood": "",
+            "correct": False
         },
         "Barakoni knows all": {
-            "text": "Flattery gets you nowhere, human.",
-            "choices": ["Go back", "Ask another question"],
+            "text": "Flattery won't get you anywhere, but sure, I'll take it.",
+            "choices": ["Try again (Q3)"],
             "image": "/static/images/barakoni_human.png",
-            "mood": "rotate"
+            "mood": "rotate",
+            "correct": False
+        },
+        # Retry Question 3 ////////////////////
+        "Try again (Q3)": {
+            "text": "Question 3: What’s the purpose of life?",
+            "choices": ["42", "To code", "Barakoni knows all"],
+            "image": "/static/images/barakoni_stare.png",
+            "mood": "rotate",
+            "correct": None
+        },
+        # Finish //////////////////////////////
+        "finish!": {
+            "text": "Good job! You're a Barakoni expert!",
+            "choices": ["go back"],
+            "image": "/static/images/barakoni_default.png",
+            "mood": "",
+            "correct": None
         }
     }
 
-    response = conversation.get(option, conversation["start"])
-    return jsonify(response)
+    if option is None:
+        response = conversation["start"]
+    else:
+        response = conversation.get(option, conversation["start"])
 
-@app.route('/random-interjection', methods=['GET'])
-def random_interjection():
-    interjections = [
-        "Barakoni says: Is this the best question you’ve got?",
-        "Barakoni says: Debugging humanity is harder than debugging code.",
-        "Barakoni says: Let me guess, your code works on your machine?",
-        "Barakoni says: You’re still here? Should I call someone?",
-        "Barakoni says: You’ve been staring at me for a while now..."
-    ]
-    return jsonify({"interjection": random.choice(interjections)})
+    return jsonify(response)
 
 if __name__ == '__main__':
     app.run(debug=True)
