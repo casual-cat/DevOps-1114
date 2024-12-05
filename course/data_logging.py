@@ -31,11 +31,20 @@
 #count words and lines:
 def counting_entries_and_lines():
     with open("journal.txt", "r") as file:
+<<<<<<< HEAD
+        lines = file.readlines()
+    total_entries = len(lines)
+    print(f"You have {total_entries} entries in your journal.")
+    total_words = sum(len(line.split()) for line in lines)
+    print(f"You have {total_words} words in your journal.") 
+
+=======
         lines= file.readlines()
         total_entries= len(lines)
         print(f"you have {total_entries} entries in your journal")
         total_words= sum(len(line.split()) for line in lines)
         print(f"you have {total_words} words in your journal")
+>>>>>>> 43d3b69077d06203612417e49b8f88c931a75780
 #add entries:
 import datetime
 def add_entry():

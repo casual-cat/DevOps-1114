@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gallery</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <h1>Gallery</h1>
+    <div id="gallery">
+        {% for design in designs %}
+        <div class="design">
+            <img src="{{ design.image_url }}" alt="User Design">
+            <p>Votes: {{ design.votes }}</p>
+            <form action="/vote/{{ design.id }}" method="POST">
+                <button type="submit">Vote</button>
+            </form>
+        </div>
+        {% endfor %}
+    </div>
+</body>
+</html>

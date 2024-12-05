@@ -1,0 +1,34 @@
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    margin: 0;
+    padding: 0;
+}
+
+#canvas-container {
+    position: relative;
+    display: inline-block;
+}
+
+#base-character {
+    width: 300px;
+    height: auto;
+}
+
+#clothing-layer img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 300px;
+    height: auto;
+}
+
+#items {
+    margin-top: 20px;
+}
+
+.item-btn {
+    padding: 10px 20px;
+    margin: 5px;
+    cursor: pointer;
+}

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loading...</title>
+    <style>
+        body {
+            background-color: #2c2f33;
+            font-family: 'Arial', sans-serif;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .loading-text {
+            font-size: 1.5rem;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="loading-text" id="loading-text">Loading Barakoni's patience...</div>
+
+    <script>
+        const messages = [
+            "Compiling sarcasm...",
+            "Loading memes into memory...",
+            "Running a debugger on humans...",
+            "Barakoni is contemplating life...",
+            "Wait, you’re still here?"
+        ];
+
+        let index = 0;
+        setInterval(() => {
+            const loadingText = document.getElementById('loading-text');
+            loadingText.textContent = messages[index];
+            index = (index + 1) % messages.length;
+        }, 2000);
+
+        // Redirect to the intended page after 5 seconds
+        setTimeout(() => {
+            window.location.href = sessionStorage.getItem('nextPage') || '/';
+        }, 5000);
+        
+    </script>
+</body>
+</html>

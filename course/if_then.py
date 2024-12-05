@@ -34,8 +34,8 @@
 #     print("zero") 
     
 # age= int(input("what ur age?: "))
-# student= input("are u a student?: ")
-# if age <= 18 or student == "yes":
+# student= str(input("are u a student?: "))
+# if age <= 18 or student.lower() == "yes":
 #     print("u have a discount")
 # else:
 #     print("u pay full.")
@@ -58,7 +58,10 @@
 
 # list = ["red", "blue", "green"]
 # for color in list:
-#     print(color)
+#     print(str(color))
+    
+# age = 34
+# print(f"my age is {age} years old")
 
 # import random
 # number = random.randint(1, 11)
