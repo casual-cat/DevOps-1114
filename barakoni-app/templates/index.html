@@ -79,28 +79,21 @@
             display: none;
         }
 
-        .points-animation {
-            position: absolute;
-            font-size: 2rem;
-            color: #00ff00;
-            animation: floatUp 1s ease-out;
-            pointer-events: none;
-        }
-
-        @keyframes floatUp {
-            0% {
-                opacity: 1;
-                transform: translateY(0);
-            }
-            100% {
-                opacity: 0;
-                transform: translateY(-50px);
-            }
+        .timer-container {
+            font-size: 1.5rem;
+            color: red;
+            margin-bottom: 20px;
+            display: none;
         }
     </style>
 </head>
 <body>
     <div class="game-container">
+        <!-- Timer -->
+        <div id="timer-container" class="timer-container">
+            Time Left: <span id="timer">10</span>s
+        </div>
+
         <!-- Score -->
         <div id="score-container" class="score-container">
             Score: <span id="score">0</span>
@@ -123,6 +116,32 @@
 
     <script>
         let score = 0;
+        let timerInterval;
+
+        function startTimer(duration) {
+            const timerElement = document.getElementById('timer');
+            const timerContainer = document.getElementById('timer-container');
+            timerElement.textContent = duration;
+            timerContainer.style.display = 'block';
+
+            timerInterval = setInterval(() => {
+                let timeLeft = parseInt(timerElement.textContent, 10);
+                timeLeft -= 1;
+
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    timerContainer.style.display = 'none';
+                    handleTimeout(); // Trigger roast response
+                } else {
+                    timerElement.textContent = timeLeft;
+                }
+            }, 1000);
+        }
+
+        function stopTimer() {
+            clearInterval(timerInterval);
+            document.getElementById('timer-container').style.display = 'none';
+        }
 
         function sendOption(option) {
             fetch('/respond', {
@@ -140,53 +159,54 @@
                     const button = document.createElement('button');
                     button.textContent = choice;
                     button.className = "choice-button";
-                    button.onclick = () => handleAnswer(choice, data.correct);
+                    button.onclick = () => handleAnswer(choice, data.correct || false, data.isTriviaEnd || false);
                     choicesContainer.appendChild(button);
                 });
 
                 document.getElementById('character-image').src = data.image;
 
-                // Show the score container when trivia starts
-                if (data.text.includes("Welcome to Barakoni Trivia")) {
+                // Show the score container during trivia
+                if (data.text.includes("Trivia")) {
                     document.getElementById('score-container').style.display = 'block';
+                }
+
+                // Start timer if it's a trivia question
+                if (data.text.includes("Question")) {
+                    startTimer(10);
                 }
             });
         }
 
-        function handleAnswer(choice, isCorrect) {
+        function handleAnswer(choice, isCorrect, isTriviaEnd) {
+            stopTimer(); // Stop the timer for a valid answer
             sendOption(choice);
+
             if (isCorrect) {
                 score += 10;
                 updateScore();
-                showPointsAnimation("+10");
             }
+
+            if (isTriviaEnd) {
+                setTimeout(() => {
+                    document.getElementById('score-container').style.display = 'none';
+                    score = 0; // Reset the score
+                }, 1000);
+            }
+        }
+
+        function handleTimeout() {
+            sendOption("Timeout"); // Send timeout option to the server
         }
 
         function updateScore() {
             document.getElementById('score').textContent = score;
         }
 
-        function showPointsAnimation(points) {
-            const pointsElement = document.createElement('div');
-            pointsElement.textContent = points;
-            pointsElement.className = "points-animation";
-            document.body.appendChild(pointsElement);
-
-            // Position the animation near the score
-            const scoreContainer = document.getElementById('score-container');
-            const rect = scoreContainer.getBoundingClientRect();
-            pointsElement.style.left = `${rect.left + rect.width / 2}px`;
-            pointsElement.style.top = `${rect.top}px`;
-
-            // Remove the animation after it completes
-            pointsElement.addEventListener('animationend', () => pointsElement.remove());
-        }
-
-        window.onload = () => sendOption("start");
-
         function navigateTo(url) {
             window.location.href = url;
         }
+
+        window.onload = () => sendOption("start");
     </script>
 </body>
 </html>
