@@ -72,6 +72,21 @@
         .back-button:hover {
             background-color: #c0392b;
         }
+
+        .progress-bar {
+            width: 60%;
+            background-color: rgba(44, 47, 51, 0.85);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+
+        .progress {
+            height: 10px;
+            background-color: #7289da;
+            width: 0%;
+            transition: width 0.5s ease-in-out;
+        }
     </style>
 </head>
 <body>
@@ -87,17 +102,18 @@
         <!-- Choices -->
         <div id="choices-container"></div>
 
+        <!-- Progress Bar -->
+        <div class="progress-bar" id="progress-bar">
+            <div class="progress" id="progress"></div>
+        </div>
+
         <!-- Back to Menu -->
         <button class="back-button" onclick="navigateTo('/')">Back to Menu</button>
     </div>
 
     <script>
-        // Initial dialogue load
-        window.onload = () => {
-            sendOption("start");
-        };
+        let progress = 0;
 
-        // Send option to server
         function sendOption(option) {
             fetch('/respond', {
                 method: 'POST',
@@ -106,12 +122,10 @@
             })
             .then(response => response.json())
             .then(data => {
-                // Update dialogue text
                 document.getElementById('dialogue-text').textContent = data.text;
-
-                // Update choices
                 const choicesContainer = document.getElementById('choices-container');
-                choicesContainer.innerHTML = ""; // Clear old choices
+                choicesContainer.innerHTML = ""; // Clear previous buttons
+
                 data.choices.forEach(choice => {
                     const button = document.createElement('button');
                     button.textContent = choice;
@@ -120,25 +134,25 @@
                     choicesContainer.appendChild(button);
                 });
 
-                // Update character image
-                const characterImage = document.getElementById('character-image');
-                characterImage.src = data.image;
+                document.getElementById('character-image').src = data.image;
 
-                // Reset animations while keeping the default class
-                characterImage.className = "character";
-
-                // Add animation class if mood exists
-                if (data.mood) {
-                    characterImage.classList.add(data.mood);
+                // Update progress bar if it's a mini-game interaction
+                if (option === "Begin Trivia" || option === "Next question") {
+                    progress += 20;
+                    document.getElementById('progress').style.width = `${progress}%`;
                 }
-            })
-            .catch(error => console.error('Error:', error));
+            });
         }
 
         // Navigation to menu
         function navigateTo(url) {
             window.location.href = url;
         }
+
+        // Load the initial dialogue
+        window.onload = () => {
+            sendOption("start");
+        };
     </script>
 </body>
 </html>
