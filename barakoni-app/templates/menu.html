@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Barakoni Interactive Menu</title>
+    <title>Barakoni Menu</title>
     <style>
         body {
             background-color: #2c2f33;
@@ -44,14 +44,14 @@
 </head>
 <body>
     <div class="menu-container">
-        <h1>Welcome to Barakoni Interactive!</h1>
-        <button class="choice-button" onclick="navigateToLoading()">Start Game</button>
-        <button class="choice-button" onclick="window.location.href='/credits'">Credits</button>
+        <h1>Welcome to Barakoni Interactive</h1>
+        <button class="choice-button" onclick="navigateTo('/loading')">Start Game</button>
+        <button class="choice-button" onclick="navigateTo('/credits')">Credits</button>
     </div>
 
     <script>
-        function navigateToLoading() {
-            window.location.href = '/loading'; // Redirect to the loading screen
+        function navigateTo(url) {
+            window.location.href = url;
         }
     </script>
 </body>

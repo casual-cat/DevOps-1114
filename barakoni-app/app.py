@@ -1,8 +1,16 @@
 import random
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, session
 
 app = Flask(__name__)
 app.secret_key = "supersecretkey"
+
+# In-memory stats (for development)
+player_stats = {
+    "total_questions": 0,
+    "correct_answers": 0,
+    "fastest_time": None,  # Track fastest response time (in seconds)
+    "accuracy": 0.0,  # Percentage of correct answers
+}
 
 responses = {
     "correct": [
@@ -19,7 +27,6 @@ responses = {
         "Too slow! Time waits for no one, especially not you.",
         "Time’s up! Better luck next time.",
         "You missed it. Was it that hard?",
-        "Tick-tock, genius. You failed."
     ]
 }
 
@@ -41,94 +48,36 @@ conversation = {
         "choices": ["Who's there?"],
         "image": "/static/images/barakoni_funny.png",
         "mood": "bounce"
-    },
-    "Start Trivia Game": {
-        "text": "Welcome to Barakoni Trivia! Let's see if you're smarter than a potato.",
-        "choices": ["Begin Trivia"],
-        "image": "/static/images/barakoni_default.png",
-        "mood": ""
-    },
-    # Trivia logic
-    "Begin Trivia": {
-        "text": "Question 1: What’s the fastest programming language? (Hint: It's not yours.)",
-        "choices": ["Python", "Assembly", "JavaScript"],
-        "image": "/static/images/barakoni_stare.png",
-        "mood": "shake"
-    },
-    "Python": {
-        "text": random.choice(responses["wrong"]),
-        "choices": ["Try again (Q1)"],
-        "image": "/static/images/barakoni_funny.png",
-        "mood": "bounce",
-        "correct": False
-    },
-    "Assembly": {
-        "text": random.choice(responses["correct"]),
-        "choices": ["Next question"],
-        "image": "/static/images/barakoni_human.png",
-        "mood": "rotate",
-        "correct": True
-    },
-    "JavaScript": {
-        "text": random.choice(responses["wrong"]),
-        "choices": ["Try again (Q1)"],
-        "image": "/static/images/barakoni_funny.png",
-        "mood": "shake",
-        "correct": False
-    },
-    "Try again (Q1)": {
-        "text": "Question 1: What’s the fastest programming language? (Hint: It's not yours.)",
-        "choices": ["Python", "Assembly", "JavaScript"],
-        "image": "/static/images/barakoni_stare.png",
-        "mood": "shake"
-    },
-    "Next question": {
-        "text": "Question 2: Why do startups fail?",
-        "choices": ["Bad product", "Poor leadership", "No money"],
-        "image": "/static/images/barakoni_default.png",
-        "mood": ""
-    },
-    "Bad product": {
-        "text": random.choice(responses["correct"]),
-        "choices": ["Finish Trivia"],
-        "image": "/static/images/barakoni_human.png",
-        "mood": "shake",
-        "correct": True
-    },
-    "Poor leadership": {
-        "text": random.choice(responses["wrong"]),
-        "choices": ["Try again (Q2)"],
-        "image": "/static/images/barakoni_stare.png",
-        "mood": "shake",
-        "correct": False
-    },
-    "No money": {
-        "text": random.choice(responses["wrong"]),
-        "choices": ["Try again (Q2)"],
-        "image": "/static/images/barakoni_funny.png",
-        "mood": "bounce",
-        "correct": False
-    },
-    "Try again (Q2)": {
-        "text": "Question 2: Why do startups fail?",
-        "choices": ["Bad product", "Poor leadership", "No money"],
-        "image": "/static/images/barakoni_default.png",
-        "mood": ""
-    },
-    "Timeout": {
-        "text": random.choice(responses["time_up"]),
-        "choices": ["Try again"],
-        "image": "/static/images/barakoni_funny.png",
-        "mood": ""
-    },
-    "Finish Trivia": {
-        "text": "Trivia completed! Your final score will reset for the next session.",
-        "choices": ["Back to Menu"],
-        "image": "/static/images/barakoni_funny.png",
-        "mood": "",
-        "isTriviaEnd": True
     }
 }
+
+questions = [
+    {
+        "text": "What’s the fastest programming language? (Hint: It's not yours.)",
+        "choices": ["Python", "Assembly", "JavaScript"],
+        "correct": "Assembly"
+    },
+    {
+        "text": "Why do startups fail?",
+        "choices": ["Bad product", "Poor leadership", "No money"],
+        "correct": "Bad product"
+    },
+    {
+        "text": "What’s the meaning of life?",
+        "choices": ["42", "To code", "Barakoni knows all"],
+        "correct": "42"
+    },
+    {
+        "text": "Which programming language is known for web development?",
+        "choices": ["Ruby", "JavaScript", "C++"],
+        "correct": "JavaScript"
+    },
+    {
+        "text": "What is 2 + 2?",
+        "choices": ["3", "4", "22"],
+        "correct": "4"
+    },
+]
 
 @app.route('/')
 def menu():
@@ -140,14 +89,71 @@ def loading():
 
 @app.route('/game')
 def game():
+    # Shuffle questions and reset session stats
+    session['shuffled_questions'] = random.sample(questions, len(questions))
+    session['current_question'] = 0
+    session['correct_answers'] = 0
     return render_template('index.html')
 
 @app.route('/respond', methods=['POST'])
 def respond():
     data = request.json
     option = data.get("option", None)
-    response = conversation.get(option, conversation["start"])
-    return jsonify(response)
+    current_question_index = session.get('current_question', 0)
+    shuffled_questions = session.get('shuffled_questions', [])
+    
+    # Check if the game should end
+    if current_question_index >= len(shuffled_questions):
+        response = {
+            "text": "Trivia completed! Your final score is {} out of {}.".format(
+                session.get('correct_answers', 0),
+                len(shuffled_questions)
+            ),
+            "choices": ["Back to Menu"],
+            "image": "/static/images/barakoni_funny.png",
+            "isTriviaEnd": True
+        }
+        session.clear()  # Reset session
+        return jsonify(response)
+    
+    # Handle correct or wrong answers
+    if option and current_question_index < len(shuffled_questions):
+        current_question = shuffled_questions[current_question_index]
+        if option == current_question["correct"]:
+            session['correct_answers'] += 1
+            response = {
+                "text": "Correct! Well done.",
+                "choices": ["Next question"],
+                "image": "/static/images/barakoni_human.png",
+                "correct": True
+            }
+        else:
+            response = {
+                "text": "Wrong! The correct answer was '{}'.".format(current_question["correct"]),
+                "choices": ["Try again", "Next question"],
+                "image": "/static/images/barakoni_funny.png",
+                "correct": False
+            }
+        return jsonify(response)
+
+    # Serve the next question
+    if current_question_index < len(shuffled_questions):
+        next_question = shuffled_questions[current_question_index]
+        session['current_question'] += 1
+        response = {
+            "text": next_question["text"],
+            "choices": next_question["choices"],
+            "image": "/static/images/barakoni_stare.png",
+            "correct": None
+        }
+        return jsonify(response)
+
+    # Default fallback
+    return jsonify({
+        "text": "Welcome to the trivia game! Are you ready?",
+        "choices": ["Start"],
+        "image": "/static/images/barakoni_default.png"
+    })
 
 if __name__ == '__main__':
     app.run(debug=True)
