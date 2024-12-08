@@ -26,7 +26,6 @@
             max-width: 200px;
             margin-bottom: 20px;
             border-radius: 15px;
-            animation-duration: 1s;
         }
 
         .dialogue-box {
@@ -72,10 +71,34 @@
         .back-button:hover {
             background-color: #c0392b;
         }
+
+        .score-container {
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+            color: #7289da;
+            display: none;
+        }
+
+        .timer-container {
+            font-size: 1.5rem;
+            color: red;
+            margin-bottom: 20px;
+            display: none;
+        }
     </style>
 </head>
 <body>
     <div class="game-container">
+        <!-- Timer -->
+        <div id="timer-container" class="timer-container">
+            Time Left: <span id="timer">10</span>s
+        </div>
+
+        <!-- Score -->
+        <div id="score-container" class="score-container">
+            Score: <span id="score">0</span>
+        </div>
+
         <!-- Character Image -->
         <img id="character-image" class="character" src="/static/images/barakoni_default.png" alt="Barakoni">
         
@@ -92,12 +115,34 @@
     </div>
 
     <script>
-        // Initial dialogue load
-        window.onload = () => {
-            sendOption("start");
-        };
+        let score = 0;
+        let timerInterval;
 
-        // Send option to server
+        function startTimer(duration) {
+            const timerElement = document.getElementById('timer');
+            const timerContainer = document.getElementById('timer-container');
+            timerElement.textContent = duration;
+            timerContainer.style.display = 'block';
+
+            timerInterval = setInterval(() => {
+                let timeLeft = parseInt(timerElement.textContent, 10);
+                timeLeft -= 1;
+
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    timerContainer.style.display = 'none';
+                    handleTimeout();
+                } else {
+                    timerElement.textContent = timeLeft;
+                }
+            }, 1000);
+        }
+
+        function stopTimer() {
+            clearInterval(timerInterval);
+            document.getElementById('timer-container').style.display = 'none';
+        }
+
         function sendOption(option) {
             fetch('/respond', {
                 method: 'POST',
@@ -106,39 +151,54 @@
             })
             .then(response => response.json())
             .then(data => {
-                // Update dialogue text
                 document.getElementById('dialogue-text').textContent = data.text;
-
-                // Update choices
                 const choicesContainer = document.getElementById('choices-container');
-                choicesContainer.innerHTML = ""; // Clear old choices
+                choicesContainer.innerHTML = ""; // Clear previous buttons
+
                 data.choices.forEach(choice => {
                     const button = document.createElement('button');
                     button.textContent = choice;
                     button.className = "choice-button";
-                    button.onclick = () => sendOption(choice);
+                    button.onclick = () => handleAnswer(choice, data.correct || false, data.isTriviaEnd || false);
                     choicesContainer.appendChild(button);
                 });
 
-                // Update character image
-                const characterImage = document.getElementById('character-image');
-                characterImage.src = data.image;
+                document.getElementById('character-image').src = data.image;
 
-                // Reset animations while keeping the default class
-                characterImage.className = "character";
-
-                // Add animation class if mood exists
-                if (data.mood) {
-                    characterImage.classList.add(data.mood);
+                if (data.text.includes("Trivia")) {
+                    document.getElementById('score-container').style.display = 'block';
                 }
-            })
-            .catch(error => console.error('Error:', error));
+
+                if (data.text.includes("Question")) {
+                    startTimer(10);
+                }
+            });
         }
 
-        // Navigation to menu
+        function handleAnswer(choice, isCorrect, isTriviaEnd) {
+            stopTimer();
+            sendOption(choice);
+
+            if (isCorrect) {
+                score += 10;
+                document.getElementById('score').textContent = score;
+            }
+
+            if (isTriviaEnd) {
+                document.getElementById('score-container').style.display = 'none';
+                score = 0;
+            }
+        }
+
+        function handleTimeout() {
+            sendOption("Timeout");
+        }
+
         function navigateTo(url) {
             window.location.href = url;
         }
+
+        window.onload = () => sendOption("start");
     </script>
 </body>
 </html>
