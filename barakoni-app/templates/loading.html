@@ -7,7 +7,7 @@
     <style>
         body {
             background-color: #2c2f33;
-            font-family: 'Arial', sans-serif;
+            font-family: 'Arial', sans-serif';
             color: white;
             display: flex;
             justify-content: center;
@@ -20,10 +20,31 @@
             font-size: 1.5rem;
             text-align: center;
         }
+
+        .loading-bar {
+            margin-top: 20px;
+            width: 80%;
+            height: 10px;
+            background: #5865f2;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .loading-progress {
+            width: 0%;
+            height: 100%;
+            background: #7289da;
+            transition: width 0.5s;
+        }
     </style>
 </head>
 <body>
-    <div class="loading-text" id="loading-text">Loading Barakoni's patience...</div>
+    <div>
+        <div class="loading-text" id="loading-text">Loading Barakoni's patience...</div>
+        <div class="loading-bar">
+            <div id="loading-progress" class="loading-progress"></div>
+        </div>
+    </div>
 
     <script>
         const messages = [
@@ -35,17 +56,29 @@
         ];
 
         let index = 0;
-        setInterval(() => {
+        let progress = 0;
+
+        // Show sarcastic messages
+        const messageInterval = setInterval(() => {
             const loadingText = document.getElementById('loading-text');
             loadingText.textContent = messages[index];
             index = (index + 1) % messages.length;
         }, 2000);
 
-        // Redirect to the intended page after 5 seconds
-        setTimeout(() => {
-            window.location.href = sessionStorage.getItem('nextPage') || '/';
-        }, 5000);
-        
+        // Simulate loading bar progress
+        const progressInterval = setInterval(() => {
+            progress += 20; // Increment by 20%
+            if (progress > 100) progress = 100;
+
+            document.getElementById('loading-progress').style.width = progress + '%';
+
+            if (progress >= 100) {
+                clearInterval(progressInterval);
+                clearInterval(messageInterval);
+                // Redirect to the game page
+                window.location.href = '/game';
+            }
+        }, 1000);
     </script>
 </body>
 </html>
