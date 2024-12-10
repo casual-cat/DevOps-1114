@@ -76,72 +76,24 @@
             margin-bottom: 20px;
             font-size: 1.5rem;
             color: #7289da;
-            display: none;
-        }
-
-        .timer-container {
-            font-size: 1.5rem;
-            color: red;
-            margin-bottom: 20px;
-            display: none;
         }
     </style>
 </head>
 <body>
     <div class="game-container">
-        <!-- Timer -->
-        <div id="timer-container" class="timer-container">
-            Time Left: <span id="timer">10</span>s
-        </div>
-
-        <!-- Score -->
         <div id="score-container" class="score-container">
             Score: <span id="score">0</span>
         </div>
-
-        <!-- Character Image -->
         <img id="character-image" class="character" src="/static/images/barakoni_default.png" alt="Barakoni">
-        
-        <!-- Dialogue Box -->
         <div class="dialogue-box">
             <p id="dialogue-text" class="dialogue-text">Loading...</p>
         </div>
-
-        <!-- Choices -->
         <div id="choices-container"></div>
-
-        <!-- Back to Menu -->
         <button class="back-button" onclick="navigateTo('/')">Back to Menu</button>
     </div>
 
     <script>
         let score = 0;
-        let timerInterval;
-
-        function startTimer(duration) {
-            const timerElement = document.getElementById('timer');
-            const timerContainer = document.getElementById('timer-container');
-            timerElement.textContent = duration;
-            timerContainer.style.display = 'block';
-
-            timerInterval = setInterval(() => {
-                let timeLeft = parseInt(timerElement.textContent, 10);
-                timeLeft -= 1;
-
-                if (timeLeft <= 0) {
-                    clearInterval(timerInterval);
-                    timerContainer.style.display = 'none';
-                    handleTimeout();
-                } else {
-                    timerElement.textContent = timeLeft;
-                }
-            }, 1000);
-        }
-
-        function stopTimer() {
-            clearInterval(timerInterval);
-            document.getElementById('timer-container').style.display = 'none';
-        }
 
         function sendOption(option) {
             fetch('/respond', {
@@ -153,7 +105,7 @@
             .then(data => {
                 document.getElementById('dialogue-text').textContent = data.text;
                 const choicesContainer = document.getElementById('choices-container');
-                choicesContainer.innerHTML = ""; // Clear previous buttons
+                choicesContainer.innerHTML = "";
 
                 data.choices.forEach(choice => {
                     const button = document.createElement('button');
@@ -165,33 +117,20 @@
 
                 document.getElementById('character-image').src = data.image;
 
-                if (data.text.includes("Trivia")) {
-                    document.getElementById('score-container').style.display = 'block';
+                if (data.correct) {
+                    score += 10;
                 }
 
-                if (data.text.includes("Question")) {
-                    startTimer(10);
-                }
+                document.getElementById('score').textContent = score;
             });
         }
 
         function handleAnswer(choice, isCorrect, isTriviaEnd) {
-            stopTimer();
             sendOption(choice);
 
-            if (isCorrect) {
-                score += 10;
-                document.getElementById('score').textContent = score;
-            }
-
             if (isTriviaEnd) {
-                document.getElementById('score-container').style.display = 'none';
                 score = 0;
             }
-        }
-
-        function handleTimeout() {
-            sendOption("Timeout");
         }
 
         function navigateTo(url) {

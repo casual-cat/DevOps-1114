@@ -6,13 +6,8 @@
     <title>Loading...</title>
     <style>
         body {
-<<<<<<< HEAD
             background-color: #2c2f33;
-            font-family: 'Arial', sans-serif';
-=======
-            background: linear-gradient(135deg, #2c2f33, #23272a);
             font-family: 'Arial', sans-serif;
->>>>>>> 0d11e22f5320731ece1ede2e3c584b04be6f650a
             color: white;
             display: flex;
             justify-content: center;
@@ -78,32 +73,9 @@
             color: #99aab5;
             margin-top: 10px;
         }
-
-        .loading-bar {
-            margin-top: 20px;
-            width: 80%;
-            height: 10px;
-            background: #5865f2;
-            border-radius: 5px;
-            overflow: hidden;
-        }
-
-        .loading-progress {
-            width: 0%;
-            height: 100%;
-            background: #7289da;
-            transition: width 0.5s;
-        }
     </style>
 </head>
 <body>
-<<<<<<< HEAD
-    <div>
-        <div class="loading-text" id="loading-text">Loading Barakoni's patience...</div>
-        <div class="loading-bar">
-            <div id="loading-progress" class="loading-progress"></div>
-        </div>
-=======
     <div class="loading-container">
         <!-- Animated GIF -->
         <img class="loading-gif" src="{{ url_for('static', filename='images/loading_placeholder.gif') }}" alt="Barakoni Running">
@@ -121,7 +93,6 @@
 
         <!-- Funny Hint -->
         <div class="loading-hint">"Good things take time... or do they?"</div>
->>>>>>> 0d11e22f5320731ece1ede2e3c584b04be6f650a
     </div>
 
     <script>
@@ -133,53 +104,26 @@
             "Almost there... or are we?"
         ];
 
-<<<<<<< HEAD
-        let index = 0;
-        let progress = 0;
-
-        // Show sarcastic messages
-        const messageInterval = setInterval(() => {
-            const loadingText = document.getElementById('loading-text');
-            loadingText.textContent = messages[index];
-            index = (index + 1) % messages.length;
-        }, 2000);
-
-        // Simulate loading bar progress
-        const progressInterval = setInterval(() => {
-            progress += 20; // Increment by 20%
-            if (progress > 100) progress = 100;
-
-            document.getElementById('loading-progress').style.width = progress + '%';
-
-            if (progress >= 100) {
-                clearInterval(progressInterval);
-                clearInterval(messageInterval);
-                // Redirect to the game page
-                window.location.href = '/game';
-            }
-        }, 1000);
-=======
         let progress = 0;
         let messageIndex = 0;
 
         function updateProgress() {
-            if (progress < 100) {
-                progress += Math.random() * 20; // Increment progress randomly
-                if (progress > 100) progress = 100;
-
-                document.getElementById('loading-bar').style.width = progress + '%';
-                document.getElementById('loading-text').textContent = messages[messageIndex];
-                messageIndex = (messageIndex + 1) % messages.length;
+        if (progress < 100) {
+            progress += Math.random() * 20;
+            if (progress > 100) progress = 100;
+            document.getElementById('loading-bar').style.width = progress + '%';
+            document.getElementById('loading-text').textContent = messages[messageIndex];
+            messageIndex = (messageIndex + 1) % messages.length;
 
                 setTimeout(updateProgress, 800);
             } else {
+                // Redirect to the game page
                 window.location.href = '/game';
             }
         }
 
         // Start the loading sequence
         updateProgress();
->>>>>>> 0d11e22f5320731ece1ede2e3c584b04be6f650a
     </script>
 </body>
 </html>
